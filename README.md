@@ -1,36 +1,36 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Job Application Tracker
 
-## Getting Started
+A silly lil job application tracking system built to organize the modern job hunt. This app allows users to log job postings, track their status, and identify which platforms (LinkedIn, Indeed, etc.) are used.
 
-First, run the development server:
+---
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## Features
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- **Google Authentication**: Secure one-tap login powered by Firebase Auth.
+- **Private Dashboard**: Row-level security ensures you only see your own data.
+- **Full CRUD Functionality**: Add, edit, and delete job applications with real-time updates.
+- **Smart Filtering**: Instant search bar to filter by Company, Position, or Source.
+- **Source Tracking**: Dedicated field to track where you found the posting to optimize your strategy.
+- **Responsive Design**: Mobile-friendly UI built with Tailwind CSS for tracking on the go.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## My Tech Stack
 
-## Learn More
+- **Frontend**: [Next.js](https://nextjs.org/) (React)
+- **Styling**: [Tailwind CSS](https://tailwindcss.com/)
+- **Database**: [Firebase Firestore](https://firebase.google.com/products/firestore) (NoSQL)
+- **Authentication**: [Firebase Auth](https://firebase.google.com/products/auth) (Google Provider)
+- **Deployment**: [Vercel](https://vercel.com/)
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Security & Privacy
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+This project implements security practices:
 
-## Deploy on Vercel
+- **Environment Variables**: Sensitive Firebase API keys are are never exposed in the source code.
+- **Firestore Security Rules**: Implemented logic to restrict data access. Only the authenticated `owner` of a record can Read, Update, or Delete it.
+- **Auth Guard**: Protected routes and UI components that react to the user's authentication state.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---

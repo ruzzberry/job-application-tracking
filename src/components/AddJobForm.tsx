@@ -23,9 +23,10 @@ export function AddJobForm() {
         ...formData,
         userId: user.uid,
         status: "Applied",
-        // We store it as a string or convert to a Date object
         appliedAt: new Date(formData.appliedAt),
+        createdAt: new Date(),
       });
+
       setFormData({
         companyName: "",
         position: "",
@@ -34,9 +35,11 @@ export function AddJobForm() {
         description: "",
         appliedAt: new Date().toISOString().split("T")[0],
       });
-      alert("Job added!");
+
+      alert("Job added successfully!");
     } catch (error) {
-      console.error(error);
+      console.error("Error adding document: ", error);
+      alert("Failed to add job. Check your database rules!");
     }
   };
 
