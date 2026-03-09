@@ -72,6 +72,7 @@ export function AddJobForm() {
         />
         {/*FOR INPUTTING THE PLATFORM YOU USE*/}
         <input
+          required
           className="p-2 border rounded text-black text-sm"
           placeholder="Platform you use to apply (e.g. GMail, LinkedIn, Indeed)"
           value={formData.source}
@@ -113,7 +114,7 @@ export function AddJobForm() {
 
       <button
         type="submit"
-        className="w-full bg-blue-600 text-white py-2 rounded-lg font-bold hover:bg-blue-700 transition"
+        className="w-full bg-[#2A2529] text-white py-2 rounded-lg font-bold hover:bg-[#3A3438] transition"
       >
         Save Application
       </button>

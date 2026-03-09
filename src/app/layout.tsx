@@ -13,8 +13,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Job Application Tracking App",
-  description: "Track your applied job application.",
+  title: "R Job Tracking",
+  description:
+    "Track your applied job application in a clean and simple web app.",
 };
 
 export default function RootLayout({

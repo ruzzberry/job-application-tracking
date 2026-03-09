@@ -19,6 +19,25 @@ export function JobList() {
   const [expandedJob, setExpandedJob] = useState<string | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editData, setEditData] = useState<any>({});
+  const [filterStatus, setFilterStatus] = useState<string | null>(null);
+  const getStatusCount = (status: string) =>
+    jobs.filter((job) => job.status === status).length;
+  const getStatusColor = (status: string, isActive: boolean) => {
+    if (!isActive) return "bg-white text-gray-600 border-gray-200";
+
+    switch (status) {
+      case "Applied":
+        return "bg-blue-100 text-blue-700 border-blue-200";
+      case "Interviewing":
+        return "bg-cyan-100 text-cyan-700 border-purple-200";
+      case "Offer":
+        return "bg-green-100 text-green-700 border-green-200";
+      case "Rejected":
+        return "bg-red-100 text-red-700 border-red-200";
+      default:
+        return "bg-[#2A2529] text-white border-[#2A2529]";
+    }
+  };
 
   const user = auth.currentUser;
 
@@ -56,13 +75,17 @@ export function JobList() {
   };
 
   //FOR SEARCH FILTER
-  const filteredJobs = jobs.filter(
-    (job) =>
+  const filteredJobs = jobs.filter((job) => {
+    const matchesSearch =
       job.companyName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       job.position.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      job.source?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      job.status?.toLowerCase().includes(searchTerm.toLowerCase()),
-  );
+      job.companyName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      job.source?.toLowerCase().includes(searchTerm.toLowerCase());
+
+    const matchesStatus = filterStatus ? job.status === filterStatus : true;
+
+    return matchesSearch && matchesStatus;
+  });
 
   if (jobs.length === 0)
     return (
@@ -76,7 +99,7 @@ export function JobList() {
         <input
           type="text"
           placeholder="Search by company or role..."
-          className="w-full p-3 pl-10 border rounded-xl text-black bg-white shadow-sm focus:ring-2 focus:ring-blue-500 outline-none"
+          className="w-full p-3 pl-10 border rounded-xl text-black bg-white shadow-sm focus:ring-2 focus:ring-[#F3F0E7] outline-none"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />
@@ -89,14 +112,45 @@ export function JobList() {
         />
       </div>
 
+      {/*STATUS FILTER BUTTONS HERE*/}
+      <div className="flex flex-wrap gap-2 mb-6 overflow-x-auto pb-2 scrollbar-hide">
+        <button
+          onClick={() => setFilterStatus(null)}
+          className={`px-4 py-2 rounded-full text-xs font-bold transition-all border shadow-sm ${
+            filterStatus === null
+              ? "bg-[#2A2529] text-white border-[#2A2529]"
+              : "bg-white text-gray-600 border-gray-200 hover:border-gray-400"
+          }`}
+        >
+          All ({jobs.length})
+        </button>
+
+        {["Applied", "Interviewing", "Offer", "Rejected"].map((status) => {
+          const isActive = filterStatus === status;
+          const count = getStatusCount(status);
+
+          return (
+            <button
+              key={status}
+              onClick={() => setFilterStatus(isActive ? null : status)}
+              className={`px-4 py-2 rounded-full text-xs font-bold transition-all border shadow-sm ${getStatusColor(status, isActive)} ${
+                !isActive ? "hover:border-gray-400" : ""
+              }`}
+            >
+              {status} ({count})
+            </button>
+          );
+        })}
+      </div>
+
       {filteredJobs.map((job) => (
         <div
           key={job.id}
           className="border rounded-xl bg-white shadow-sm overflow-hidden text-black transition-all"
         >
           {editingId === job.id ? (
-            //FOR EDITING UI //
-            <div className="p-4 space-y-3 bg-blue-50">
+            //FOR EDITING UI//
+            <div className="p-4 space-y-3 bg-gray-50">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <input
                   className="p-2 border rounded text-sm text-black"
@@ -117,20 +171,6 @@ export function JobList() {
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                {/*FOR STATUS EDITING */}
-                <select
-                  className="p-2 border rounded text-sm bg-white text-black"
-                  value={editData.status || "Applied"}
-                  onChange={(e) =>
-                    setEditData({ ...editData, status: e.target.value })
-                  }
-                >
-                  <option value="Applied">Applied</option>
-                  <option value="Interviewing">Interviewing</option>
-                  <option value="Offer">Offer</option>
-                  <option value="Rejected">Rejected</option>
-                </select>
-
                 {/*FOR DATE EDITING*/}
                 <input
                   type="date"
@@ -152,14 +192,6 @@ export function JobList() {
                   }
                 />
                 <input
-                  className="p-2 border rounded text-sm text-black"
-                  placeholder="Source"
-                  value={editData.source || ""}
-                  onChange={(e) =>
-                    setEditData({ ...editData, source: e.target.value })
-                  }
-                />
-                <input
                   className="w-full p-2 border rounded text-sm text-black"
                   placeholder="Job URL"
                   value={editData.jobUrl || ""}
@@ -167,6 +199,28 @@ export function JobList() {
                     setEditData({ ...editData, jobUrl: e.target.value })
                   }
                 />
+                <input
+                  className="p-2 border rounded text-sm text-black"
+                  placeholder="Platform"
+                  value={editData.source || ""}
+                  onChange={(e) =>
+                    setEditData({ ...editData, source: e.target.value })
+                  }
+                />
+
+                {/*FOR STATUS EDITING*/}
+                <select
+                  className="p-2 border rounded text-sm bg-white text-black"
+                  value={editData.status || "Applied"}
+                  onChange={(e) =>
+                    setEditData({ ...editData, status: e.target.value })
+                  }
+                >
+                  <option value="Applied">Applied</option>
+                  <option value="Interviewing">Interviewing</option>
+                  <option value="Offer">Offer</option>
+                  <option value="Rejected">Rejected</option>
+                </select>
               </div>
 
               <textarea
@@ -181,7 +235,7 @@ export function JobList() {
               <div className="flex gap-2 pt-2">
                 <button
                   onClick={() => handleUpdate(job.id)}
-                  className="bg-green-600 text-white px-4 py-1.5 rounded text-sm font-bold hover:bg-green-700"
+                  className="bg-[#2A2529] text-white px-4 py-1.5 rounded text-sm font-bold hover:bg-[#3A3438]"
                 >
                   Save Changes
                 </button>
@@ -203,12 +257,17 @@ export function JobList() {
                     setExpandedJob(expandedJob === job.id ? null : job.id)
                   }
                 >
-                  <h3 className="font-bold text-lg">{job.companyName}</h3>
+                  <h3 className="font-bold text-lg flex items-center gap-2">
+                    {job.companyName}
+                    <span
+                      className={`text-[10px] px-2 py-0.5 rounded-full border ${getStatusColor(job.status, true)}`}
+                    >
+                      {job.status}
+                    </span>
+                  </h3>
 
-                  <p className="text-sm text-gray-500">
-                    {job.position} • {job.status}
-                  </p>
-                  <span className="font-medium text-blue-500">
+                  <p className="text-sm text-gray-600">{job.position}</p>
+                  <span className="font-medium text-gray-500">
                     {job.source || "Direct"}
                   </span>
                   <p className="text-xs text-gray-400 mt-1">
@@ -218,15 +277,16 @@ export function JobList() {
                       : "No date set"}
                   </p>
                 </div>
+
                 <div className="flex gap-4 items-center">
                   <button
                     onClick={() => startEditing(job)}
-                    className="text-blue-500 hover:text-blue-700 text-sm font-bold transition-colors"
+                    className="text-[#2A2529] hover:text-[#3A3438] text-sm font-bold transition-colors"
                   >
-                    Edit
+                    EDIT
                   </button>
 
-                  {/*TRASH CAN BUTTON*/}
+                  {/*TRASH CAN BUTTON HERE*/}
                   <button
                     onClick={() => handleDelete(job.id)}
                     className="text-gray-400 hover:text-red-500 transition-colors p-1"
@@ -266,7 +326,7 @@ export function JobList() {
                         }
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center text-xs text-blue-600 font-bold hover:text-blue-800 transition-colors"
+                        className="inline-flex items-center text-xs text-[#2A2529]-600 font-bold hover:text-[#3A3438] transition-colors"
                       >
                         OPEN ORIGINAL POSTING
                         <svg
